@@ -6,6 +6,7 @@ config();
 
 import RegistrationPage from "../page/RegistrationPage.js";
 import GmailService from '../service/gmail-service';
+import LoginPage from "../page/LoginPage.js";
 
 import UserData from "../utils/user-data.json" assert {type: "json"};
 
@@ -49,7 +50,23 @@ test('Register a user', async ({page, request}) => {
     });
 });
 
-test('Then login with the user', async ({page}) => {
+test.only('Then login with the user', async ({page}) => {
+    // Then login with the user
+    await page.goto('/login');
+    const latestUser = await UserData[UserData.length - 1];
+    console.log(latestUser);
+    console.log(latestUser.email);
+    console.log(latestUser.password);
+    await new LoginPage(page).loginForm(latestUser.email, latestUser.password);
+    await expect(page.getByText('Dashboard')).toBeVisible()
+
+    await test.step("add random 2 items", async () => {
+        // add random 2 items
+
+    });
+
+    await page.pause();
+    // assert that 2 items are showing on the item list
 
 });
 
