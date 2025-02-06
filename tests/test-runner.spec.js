@@ -31,7 +31,7 @@ import ItemPage from "../page/ItemPage.js";
 //     });
 // });
 
-test('Register a user', async ({page, request}) => {
+test('Visit the site. Register a user and assert if the congratulation mail is sent and also assert the toast message', async ({page, request}) => {
     // Register a user
     await page.goto('/register');
     const user = await new RegistrationPage(page).registerUser(process.env.email_prefix);
@@ -52,13 +52,9 @@ test('Register a user', async ({page, request}) => {
     });
 });
 
-test.only('Then login with the user', async ({page}) => {
-    // Then login with the user
+test('Then login with the user and add random 2 items and assert that 2 items are showing on the item list', async ({page}) => {
     await page.goto('/login');
     const latestUser = await UserData[UserData.length - 1];
-    console.log(latestUser);
-    console.log(latestUser.email);
-    console.log(latestUser.password);
     await new LoginPage(page).loginForm(latestUser.email, latestUser.password);
     await expect(page.getByText('Dashboard')).toBeVisible()
 
@@ -80,6 +76,34 @@ test.only('Then login with the user', async ({page}) => {
         await searchBox.fill(ItemData[1].itemName);
         await expect(page.getByText('Total Rows:')).toContainText("Total Rows: 1")
     });
+});
+
+test('Then go to profile settings and upload a profile photo and logout', async ({page}) => {
+    await page.goto('/login');
+    const latestUser = await UserData[UserData.length - 1];
+    await new LoginPage(page).loginForm(latestUser.email, latestUser.password);
+    await expect(page.getByText('Dashboard')).toBeVisible()
+
+    // go to profile settings
+    await page.goto('/user');
+    await page.getByRole('button', { name: 'account of current user' }).click();
+    await page.getByRole('menuitem', { name: 'Profile' }).click();
+    await expect(page.getByRole('heading', { name: 'User Details' })).toBeVisible()
+
+    // upload a profile photo
+    await page.getByRole('button', { name: 'Edit' }).click();
+    await page.locator('input[type="file"]').setInputFiles(`${process.cwd()}\\resources\\profile.jpg`);
+    await page.getByRole('button', { name: 'Upload Image' }).click();
+    await page.waitForTimeout(5000);
+
+    // logout
+    await page.getByRole('button', { name: 'account of current user' }).click();
+    await page.getByRole('menuitem', { name: 'Logout' }).click();
+    await page.pause();
+});
+
+test.only('Then click on "Reset it here" from login page and then reset new password', async ({page}) => {
+
 
     await page.pause();
 });
