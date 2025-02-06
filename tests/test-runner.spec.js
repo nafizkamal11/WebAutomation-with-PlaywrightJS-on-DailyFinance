@@ -9,6 +9,8 @@ import GmailService from '../service/gmail-service';
 import LoginPage from "../page/LoginPage.js";
 
 import UserData from "../utils/user-data.json" assert {type: "json"};
+import ItemData from "../utils/item-data.json" assert {type: "json"};
+import ItemPage from "../page/ItemPage.js";
 
 // test.describe('01', () => {
 //     test('Register a user', async ({ page, request }) => {
@@ -62,11 +64,23 @@ test.only('Then login with the user', async ({page}) => {
 
     await test.step("add random 2 items", async () => {
         // add random 2 items
+        while (ItemData.length > 0)
+            ItemData.pop();
 
+        const itemPage = await new ItemPage(page);
+        await itemPage.addItem();
+        await itemPage.addItem();
+    });
+
+    await test.step("assert that 2 items are showing on the item list", async () => {
+        const searchBox = await page.getByRole('textbox', {name: 'Search items...'});
+        await searchBox.fill(ItemData[0].itemName);
+        await expect(page.getByText('Total Rows:')).toContainText("Total Rows: 1")
+        await searchBox.clear();
+        await searchBox.fill(ItemData[1].itemName);
+        await expect(page.getByText('Total Rows:')).toContainText("Total Rows: 1")
     });
 
     await page.pause();
-    // assert that 2 items are showing on the item list
-
 });
 
