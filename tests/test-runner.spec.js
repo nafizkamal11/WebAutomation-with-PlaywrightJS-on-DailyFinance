@@ -13,25 +13,6 @@ import UserData from "../utils/user-data.json" assert {type: "json"};
 import ItemData from "../utils/item-data.json" assert {type: "json"};
 import ItemPage from "../page/ItemPage.js";
 
-// test.describe('01', () => {
-//     test('Register a user', async ({ page, request }) => {
-//         // Register a user
-//         await page.goto('/register');
-//         const user = await new RegistrationPage(page).registerUser(process.env.email_prefix);
-//
-//         // assert the toast message
-//         await expect(page.getByText(`User ${user.firstName} ${user.lastName} registered`)).toBeVisible();
-//
-//         // assert the congratulation mail is sent
-//         await page.waitForTimeout(15000);
-//         const latestGmail = await GmailService.gmail(request);
-//         await expect(latestGmail.toString()).toEqual(`Dear ${user.firstName}, Welcome to our platform! We&#39;re excited to have you onboard. Best regards, Road to Career`);
-//
-//         UserData.push(user);
-//         fs.writeFileSync("./utils/user-data.json", JSON.stringify(UserData, null, 2));
-//     });
-// });
-
 test('Visit the site. Register a user and assert if the congratulation mail is sent and also assert the toast message', async ({page, request}) => {
     // Register a user
     await page.goto('/register');
@@ -100,7 +81,7 @@ test('Then go to profile settings and upload a profile photo and logout', async 
     // logout
     await page.getByRole('button', { name: 'account of current user' }).click();
     await page.getByRole('menuitem', { name: 'Logout' }).click();
-    await page.pause();
+    // await page.pause();
 });
 
 test('Then click on "Reset it here" from login page and then reset new password', async ({page, request}) => {
@@ -134,7 +115,7 @@ test('Then click on "Reset it here" from login page and then reset new password'
         await page.waitForTimeout(3000);
     });
 
-    await page.pause();
+    // await page.pause();
 });
 
 test('Finally login with the new password and assert that login is successful.', async ({page, request}) => {
@@ -146,8 +127,5 @@ test('Finally login with the new password and assert that login is successful.',
     // assert that login is successful
     await expect(page.getByText('Dashboard')).toBeVisible()
 
-    await page.pause();
+    // await page.pause();
 });
-
-
-
