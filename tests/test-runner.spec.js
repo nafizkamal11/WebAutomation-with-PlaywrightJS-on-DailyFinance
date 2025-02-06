@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import {faker} from "@faker-js/faker";
 import fs from 'fs';
 import {config} from "dotenv";
 
@@ -102,9 +103,51 @@ test('Then go to profile settings and upload a profile photo and logout', async 
     await page.pause();
 });
 
-test.only('Then click on "Reset it here" from login page and then reset new password', async ({page}) => {
+test('Then click on "Reset it here" from login page and then reset new password', async ({page, request}) => {
+    // click on "Reset it here" from login page
+    await page.goto('/login');
+    await page.getByRole('link', {name: 'Reset it here'}).click();
+    const latestUser = await UserData[UserData.length - 1];
+    await page.getByRole('textbox', {name: 'Email'}).fill(latestUser.email);
+    await page.getByRole('button', {name: 'Send Reset Link'}).click();
+    const responseMessage = page.getByText('Password reset link sent to');
+    await expect(responseMessage).toContainText("Password reset link sent to your email");
 
+
+    await test.step("reset new password", async () => {
+        // assert the congratulation mail is sent
+        await page.waitForTimeout(15000);
+        const latestGmail = await GmailService.gmail(request);
+        const resetUrl = await latestGmail.slice(52, latestGmail.length);
+
+        await page.goto(resetUrl);
+        await expect(page.getByRole('heading', { name: 'Reset Password' })).toBeVisible()
+
+        const newPassword = faker.internet.password();
+        await page.getByRole('textbox', { name: 'New Password' }).fill(newPassword);
+        await page.getByRole('textbox', {name: 'Confirm Password'}).fill(newPassword);
+        await page.getByRole('button', { name: 'Reset Password' }).click()
+        await page.getByText('Password reset successfully')
+
+        latestUser.password = newPassword;
+        fs.writeFileSync('./utils/user-data.json', JSON.stringify(UserData, null, 2));
+        await page.waitForTimeout(3000);
+    });
 
     await page.pause();
 });
+
+test('Finally login with the new password and assert that login is successful.', async ({page, request}) => {
+    // login with the new password
+    await page.goto('/login');
+    const latestUser = await UserData[UserData.length - 1];
+    await new LoginPage(page).loginForm(latestUser.email, latestUser.password);
+
+    // assert that login is successful
+    await expect(page.getByText('Dashboard')).toBeVisible()
+
+    await page.pause();
+});
+
+
 
