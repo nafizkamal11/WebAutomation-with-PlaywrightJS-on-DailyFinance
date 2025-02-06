@@ -134,9 +134,9 @@ Open the Allure report in your browser:
 
 - **Allure Reports:** The project integrates Allure for generating test reports. Follow the steps in the [Running Tests](#running-tests) section.
 
-    ![img.png](img.png)
+    ![image](https://github.com/user-attachments/assets/c1255c54-c201-4775-a036-c1195df59e66)
   
-    ![img_1.png](img_1.png)
+    ![image](https://github.com/user-attachments/assets/134fed44-dd59-4f23-8c5e-e02f16772c22)
 
 ## Additional Resources
 
